@@ -1,3 +1,4 @@
+import random
 from typing import Callable, List, Tuple
 
 import pytest
@@ -107,16 +108,16 @@ def test_sigmoid(a: float) -> None:
     * It crosses 0 at 0.5
     * It is  strictly increasing.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    assert 0.0 <= sigmoid(a) <= 1.0
+    assert_close(1 - sigmoid(a), sigmoid(-a))
+    assert sigmoid(0) == 0.5
+    assert sigmoid(a) <= sigmoid(a + 1)
 
 
-@pytest.mark.task0_2
 @given(small_floats, small_floats, small_floats)
 def test_transitive(a: float, b: float, c: float) -> None:
     """Test the transitive property of less-than (a < b and b < c implies a < c)"""
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    assert a < c if a < b and b < c else True
 
 
 @pytest.mark.task0_2
@@ -124,8 +125,9 @@ def test_symmetric() -> None:
     """Write a test that ensures that :func:`minitorch.operators.mul` is symmetric, i.e.
     gives the same value regardless of the order of its input.
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    a = random.uniform(5.0, 10.0)
+    b = random.uniform(5.0, 10.0)
+    assert mul(a, b) == pytest.approx(mul(b, a))
 
 
 @pytest.mark.task0_2
@@ -133,15 +135,17 @@ def test_distribute() -> None:
     r"""Write a test that ensures that your operators distribute, i.e.
     :math:`z \times (x + y) = z \times x + z \times y`
     """
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    x = random.uniform(5.0, 10.0)
+    y = random.uniform(5.0, 10.0)
+    z = random.uniform(5.0, 10.0)
+    assert mul(z, add(x, y)) == pytest.approx(mul(z, x) + mul(z, y))
 
 
-@pytest.mark.task0_2
 def test_other() -> None:
-    """Write a test that ensures some other property holds for your functions."""
-    # TODO: Implement for Task 0.2.
-    raise NotImplementedError("Need to implement for Task 0.2")
+    # Check commutativity of addition
+    a = random.uniform(0, 10)
+    b = random.uniform(0, 10)
+    assert add(a, b) == pytest.approx(add(b, a))
 
 
 # ## Task 0.3  - Higher-order functions
@@ -165,11 +169,18 @@ def test_zip_with(a: float, b: float, c: float, d: float) -> None:
     lists(small_floats, min_size=5, max_size=5),
 )
 def test_sum_distribute(ls1: List[float], ls2: List[float]) -> None:
-    """Write a test that ensures that the sum of `ls1` plus the sum of `ls2`
-    is the same as the sum of each element of `ls1` plus each element of `ls2`.
     """
-    # TODO: Implement for Task 0.3.
-    raise NotImplementedError("Need to implement for Task 0.3")
+    Ensure that the sum of each list individually is the same as
+    the sum of their elementwise sum (up to the length of the shorter list).
+    """
+    # Take elementwise sum for overlapping length
+    min_len = min(len(ls1), len(ls2))
+    elementwise_sum = addLists(ls1[:min_len], ls2[:min_len])
+
+    # Check property: sum(ls1[:min_len]) + sum(ls2[:min_len]) == sum(elementwise_sum)
+    assert sum(ls1[:min_len]) + sum(ls2[:min_len]) == pytest.approx(
+        sum(elementwise_sum), rel=1e-9
+    )
 
 
 @pytest.mark.task0_3
